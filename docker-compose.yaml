@@ -1,0 +1,59 @@
+services:
+  homebox_control:
+    build: .
+    container_name: homebox_control
+    restart: unless-stopped
+    
+    # Variables d'environnement depuis .env
+    env_file:
+      - /opt/Homebox_AI/.env
+    
+    # Ou définir directement (déconseillé, utilisez .env)
+    # environment:
+    #   - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+    #   - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
+    #   - HOMEBOX_URL=${HOMEBOX_URL:-http://homebox:7745}
+    #   - NERON_URL=${NERON_URL:-http://neron:3000}
+    #   - CHECK_INTERVAL=${CHECK_INTERVAL:-300}
+    
+    # Volumes pour persistance des données
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./config:/app/config:ro  # Read-only pour la config
+    
+    # Réseau (si vos services sont sur le même réseau Docker)
+    networks:
+      - Neron_Network
+      - Homebox_Network
+    
+    # Healthcheck
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import sys; sys.exit(0)"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    
+    # Limites de ressources (optionnel)
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+    
+    # Logs
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  Homebox_Network:
+    external: true
+  Neron_Network:
+    external: true
