@@ -80,7 +80,7 @@ PORTS=(
     [Prometheus]=9090
     [MQTT]=1883
     [CUPS]=631
-    [SSH]=22
+    [SSH]=1820
 )
 
 for NAME in "${!PORTS[@]}"; do
@@ -94,7 +94,7 @@ for S in "${SERVICES[@]}"; do
 done
 
 # ---------- Containers Docker spécifiques ----------
-CONTAINERS=(neron-core neron-llm home-assistant prometheus)
+CONTAINERS=(home-assistant prometheus)
 for C in "${CONTAINERS[@]}"; do
     check_docker_container $C
 done
